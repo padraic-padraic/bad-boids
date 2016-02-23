@@ -26,12 +26,9 @@ class Flock(object):
 
     def update_boids(self):
         # Fly towards the middle
-        for i in range(len(self.xs)):
-            for j in range(len(self.xs)):
-                self.xvs[i]=self.xvs[i]+(self.xs[j]-self.xs[i])*0.01/len(self.xs)
-        for i in range(len(self.xs)):
-            for j in range(len(self.xs)):
-                self.yvs[i]=self.yvs[i]+(self.ys[j]-self.ys[i])*0.01/len(self.xs)
+        self.xvs -= (self.xs - np.mean(self.xs))*0.01
+        self.yvs -= (self.ys - np.mean(self.ys))*0.01
+
         # Fly away from nearby boids
         for i in range(len(self.xs)):
             for j in range(len(self.xs)):
