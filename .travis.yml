@@ -1,5 +1,5 @@
 language: python
 python:
     - 2.7
-install: "pip install numpy matplotlib"
+install: "pip install PyYAML numpy matplotlib"
 script: nosetests
