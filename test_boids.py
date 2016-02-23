@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 from boids import Flock
 from nose.tools import assert_equal, assert_almost_equal
 import os

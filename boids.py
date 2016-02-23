@@ -2,7 +2,6 @@
 A deliberately bad implementation of [Boids](http://dl.acm.org/citation.cfm?doid=37401.37406)
 for use as an exercise on refactoring.
 """
-
 from matplotlib import pyplot as plt
 from matplotlib import animation
 import numpy as np
@@ -42,9 +41,8 @@ class Flock(object):
                     self.xvs[i]=self.xvs[i]+(self.xvs[j]-self.xvs[i])*0.125/len(self.xs)
                     self.yvs[i]=self.yvs[i]+(self.yvs[j]-self.yvs[i])*0.125/len(self.xs)
         # Move according to velocities
-        for i in range(len(self.xs)):
-            self.xs[i]=self.xs[i]+self.xvs[i]
-            self.ys[i]=self.ys[i]+self.yvs[i]
+        self.xs+= self.xvs
+        self.ys+= self.yvs
 
 flock = Flock()
 figure=plt.figure()
