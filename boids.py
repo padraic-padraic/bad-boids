@@ -43,11 +43,19 @@ class Flock(object):
         self.xvs += np.sum(x_correct,0)
         self.yvs += np.sum(y_correct,0)
         # Try to match speed with nearby boids
-        for i in range(len(self.xs)):
-            for j in range(len(self.xs)):
-                if (self.xs[j]-self.xs[i])**2 + (self.ys[j]-self.ys[i])**2 < 10000:
-                    self.xvs[i]=self.xvs[i]+(self.xvs[j]-self.xvs[i])*0.125/len(self.xs)
-                    self.yvs[i]=self.yvs[i]+(self.yvs[j]-self.yvs[i])*0.125/len(self.xs)
+        delta_xvs = self.xvs[np.newaxis,:]-self.xvs[:,np.newaxis]
+        delta_yvs = self.yvs[np.newaxis,:]-self.yvs[:,np.newaxis]
+        weight = 0.125 / self.xs.size
+        distant = (sep_x*sep_x + sep_y*sep_y) > 10000.
+        delta_xvs[distant] = 0.
+        delta_yvs[distant] = 0.
+        self.xvs += weight*(np.sum(delta_xvs,0))
+        self.yvs += weight*(np.sum(delta_yvs,0))
+        # for i in range(len(self.xs)):
+        #     for j in range(len(self.xs)):
+        #         if (self.xs[j]-self.xs[i])**2 + (self.ys[j]-self.ys[i])**2 < 10000:
+        #             self.xvs[i]=self.xvs[i]+(self.xvs[j]-self.xvs[i])*0.125/len(self.xs)
+        #             self.yvs[i]=self.yvs[i]+(self.yvs[j]-self.yvs[i])*0.125/len(self.xs)
         # Move according to velocities
         self.xs += self.xvs
         self.ys += self.yvs
