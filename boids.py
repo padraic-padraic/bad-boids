@@ -11,54 +11,58 @@ FIG_LIMITS = (-500., 1500.)
 
 class Flock(object):
 
-    def __init__(self, number=50):
-        self.xs = np.array([random.uniform(-450., 50.) for x in range(number)])
-        self.ys = np.array([random.uniform(300., 600.) for x in range(number)])
-        self.xvs = np.array([random.uniform(0., 10.) for x in range(number)])
-        self.yvs = np.array([random.uniform(-20., 20.) for x in range(number)])
+    def __init__(self, number=50,**kwargs):
+        data = kwargs.get('data', None)
+        if data is None:
+            xs = np.array([random.uniform(-450., 50.) for x in range(number)])
+            ys = np.array([random.uniform(300., 600.) for x in range(number)])
+            xvs = np.array([random.uniform(0., 10.) for x in range(number)])
+            yvs = np.array([random.uniform(-20., 20.) for x in range(number)])
+        else:
+            xs,ys,xvs,yvs = data
+        self.positions = np.array([xs,ys])
+        self.velocities = np.array([xvs,yvs])
 
     @classmethod
-    def from_data(cls, data):
-        flock = cls()
-        data = [np.array(el) for el in data]
-        flock.xs, flock.ys, flock.xvs, flock.yvs = data
+    def from_data(cls, _data):
+        flock = cls(data=_data)
         return flock
 
+    @property
+    def xs(self):
+        return self.positions[0]
+    @property
+    def ys(self):
+        return self.positions[1]
+
     def get_tuple(self):
-        return (self.xs,self.ys,self.xvs,self.yvs)
+        xs,ys = self.positions
+        xvs,yvs = self.velocities
+        return (xs,ys,xvs,yvs)
 
     def update_boids(self):
         # All of this smells of repetition even with numpy's help
         # Fly towards the middle
-        self.xvs -= (self.xs - np.mean(self.xs))*0.01
-        self.yvs -= (self.ys - np.mean(self.ys))*0.01
+        flock_com = np.mean(self.positions,1)
+        self.velocities -= 0.01*(self.positions - flock_com[:,np.newaxis])
         # Fly away from nearby boids
-        sep_x = self.xs[np.newaxis,:] - self.xs[:,np.newaxis]
-        sep_y = self.ys[np.newaxis,:] - self.ys[:,np.newaxis]
-        distant = (sep_x*sep_x + sep_y*sep_y) > 100.
-        x_correct = np.copy(sep_x)
-        x_correct[distant] = 0.
-        y_correct = np.copy(sep_y)
-        y_correct[distant] = 0.
-        self.xvs += np.sum(x_correct,0)
-        self.yvs += np.sum(y_correct,0)
+        separations = self.positions[:,np.newaxis,:] - self.positions[:,:,np.newaxis]
+        distant = np.sum(separations*separations,0) > 100.
+        correction = np.copy(separations)
+        correction[0,:,:][distant] = 0.
+        correction[1,:,:][distant] = 0.
+        self.velocities += np.sum(correction,1)
         # Try to match speed with nearby boids
-        delta_xvs = self.xvs[np.newaxis,:]-self.xvs[:,np.newaxis]
-        delta_yvs = self.yvs[np.newaxis,:]-self.yvs[:,np.newaxis]
-        weight = 0.125 / self.xs.size
-        distant = (sep_x*sep_x + sep_y*sep_y) > 10000.
-        delta_xvs[distant] = 0.
-        delta_yvs[distant] = 0.
-        self.xvs += weight*(np.sum(delta_xvs,0))
-        self.yvs += weight*(np.sum(delta_yvs,0))
-        # for i in range(len(self.xs)):
-        #     for j in range(len(self.xs)):
-        #         if (self.xs[j]-self.xs[i])**2 + (self.ys[j]-self.ys[i])**2 < 10000:
-        #             self.xvs[i]=self.xvs[i]+(self.xvs[j]-self.xvs[i])*0.125/len(self.xs)
-        #             self.yvs[i]=self.yvs[i]+(self.yvs[j]-self.yvs[i])*0.125/len(self.xs)
+        delta_vs = self.velocities[:,np.newaxis,:] - self.velocities[:,:,np.newaxis]
+        distant = np.sum(separations*separations,0) > 10000.
+        delta_vs[0,:,:][distant] = 0.
+        delta_vs[1,:,:][distant] = 0.
+        self.velocities += 0.125 * np.mean(delta_vs,1)
+        # weight = 0.125 / self.xs.size
+        # self.xvs += weight*(np.sum(delta_xvs,0))
+        # self.yvs += weight*(np.sum(delta_yvs,0))
         # Move according to velocities
-        self.xs += self.xvs
-        self.ys += self.yvs
+        self.positions += self.velocities
 
 flock = Flock()
 figure=plt.figure()
