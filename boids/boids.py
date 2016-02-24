@@ -1,5 +1,5 @@
 """
-A deliberately bad implementation of [Boids](http://dl.acm.org/citation.cfm?doid=37401.37406)
+A hopefully no longer bad implementation of [Boids](http://dl.acm.org/citation.cfm?doid=37401.37406)
 for use as an exercise on refactoring.
 """
 from matplotlib import pyplot as plt
@@ -69,19 +69,6 @@ class Flock(object):
         anim = animation.FuncAnimation(self.figure, self.animate,
                                        frames=50,interval=50)
         plt.show()
-
-# flock = Flock()
-# figure=plt.figure()
-# axes=plt.axes(xlim=FIG_LIMITS, ylim=FIG_LIMITS)
-# scatter=axes.scatter(flock.xs, flock.ys)
-#
-# def animate(frame):
-#     flock.update_boids()
-#     scatter.set_offsets(zip(flock.xs, flock.ys))
-#
-#
-# anim = animation.FuncAnimation(figure, animate,
-#                                frames=50, interval=50)
 
 if __name__ == "__main__":
     flock = Flock()

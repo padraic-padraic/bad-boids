@@ -1,0 +1,14 @@
+To cite Boids in publications, please use:
+
+P. Calpin, Boids, (2016), GitHub repository, https://github.com/padraic-padraic/bad-boids
+
+A BibTeX entry for LaTeX users is
+
+@misc{Calpin2016,
+  author = {Calpin, P.},
+  title = {Boids},
+  year = {2016},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/padraic-padraic/bad-boids},
+}
