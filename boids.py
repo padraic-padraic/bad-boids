@@ -22,6 +22,9 @@ class Flock(object):
             xs,ys,xvs,yvs = data
         self.positions = np.array([xs,ys])
         self.velocities = np.array([xvs,yvs])
+        self.figure = plt.figure()
+        axes=plt.axes(xlim=FIG_LIMITS, ylim=FIG_LIMITS)
+        self.scatter=axes.scatter(xs, ys)
 
     @classmethod
     def from_data(cls, _data):
@@ -29,19 +32,16 @@ class Flock(object):
         return flock
 
     @property
-    def xs(self):
-        return self.positions[0]
-    @property
-    def ys(self):
-        return self.positions[1]
+    def coord_tuple(self):
+        return (self.positions[0],self.positions[1])
 
-    def get_tuple(self):
+    @property
+    def data(self):
         xs,ys = self.positions
         xvs,yvs = self.velocities
         return (xs,ys,xvs,yvs)
 
     def update_boids(self):
-        # All of this smells of repetition even with numpy's help
         # Fly towards the middle
         flock_com = np.mean(self.positions,1)
         self.velocities -= 0.01*(self.positions - flock_com[:,np.newaxis])
@@ -58,24 +58,31 @@ class Flock(object):
         delta_vs[0,:,:][distant] = 0.
         delta_vs[1,:,:][distant] = 0.
         self.velocities += 0.125 * np.mean(delta_vs,1)
-        # weight = 0.125 / self.xs.size
-        # self.xvs += weight*(np.sum(delta_xvs,0))
-        # self.yvs += weight*(np.sum(delta_yvs,0))
         # Move according to velocities
         self.positions += self.velocities
 
-flock = Flock()
-figure=plt.figure()
-axes=plt.axes(xlim=FIG_LIMITS, ylim=FIG_LIMITS)
-scatter=axes.scatter(flock.xs,flock.ys)
+    def animate(self,frame):
+        self.update_boids()
+        self.scatter.set_offsets(self.coord_tuple)
 
-def animate(frame):
-    flock.update_boids()
-    scatter.set_offsets(zip(flock.xs,flock.ys))
+    def show_animation(self):
+        anim = animation.FuncAnimation(self.figure, self.animate,
+                                       frames=50,interval=50)
+        plt.show()
 
-
-anim = animation.FuncAnimation(figure, animate,
-                               frames=50, interval=50)
+# flock = Flock()
+# figure=plt.figure()
+# axes=plt.axes(xlim=FIG_LIMITS, ylim=FIG_LIMITS)
+# scatter=axes.scatter(flock.xs, flock.ys)
+#
+# def animate(frame):
+#     flock.update_boids()
+#     scatter.set_offsets(zip(flock.xs, flock.ys))
+#
+#
+# anim = animation.FuncAnimation(figure, animate,
+#                                frames=50, interval=50)
 
 if __name__ == "__main__":
-    plt.show()
+    flock = Flock()
+    flock.show_animation()

@@ -10,7 +10,7 @@ def test_bad_boids_regression():
     boid_data=regression_data["before"]
     flock = Flock.from_data(boid_data)
     flock.update_boids()
-    res = flock.get_tuple()
+    res = flock.data
     for after,calculated in zip(regression_data["after"],res):
         for after_value,calculated_value in zip(after,calculated):
             assert_almost_equal(after_value,calculated_value,delta=0.01)
@@ -18,7 +18,7 @@ def test_bad_boids_regression():
 def test_from_data():
     data=yaml.load(open(os.path.join(os.path.dirname(__file__),'fixture.yml')))
     flock = Flock.from_data(data["before"])
-    imported = flock.get_tuple()
+    imported = flock.data
     for real,got in zip(data["before"],imported):
         for real_value, got_value in zip(real,got):
             assert_equal(real_value,got_value)
