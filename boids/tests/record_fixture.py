@@ -1,12 +1,14 @@
+import matplotlib
+matplotlib.use('Agg')
 import yaml
-from boids import Flock
+from boids.flock import Flock
 from copy import deepcopy
 
 flock = Flock()
-before=deepcopy(flock.get_tuple())
+before=deepcopy(flock.data)
 flock.update_boids()
-after=flock.get_tuple()
-fixture={"before":before,"after":after}
-fixture_file=open("fixture.yml",'w')
+after=flock.data
+fixture = {"before":before, "after":after}
+fixture_file=open("fixture_test.yml",'w')
 fixture_file.write(yaml.dump(fixture))
 fixture_file.close()

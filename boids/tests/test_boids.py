@@ -1,6 +1,6 @@
 import matplotlib
 matplotlib.use('Agg')
-from boids import Flock
+from boids.flock import Flock
 from nose.tools import assert_equal, assert_almost_equal
 import numpy as np
 import os
@@ -34,3 +34,13 @@ def test_properties():
             assert_almost_equal(after_value,got_value,delta=0.01)
     assert np.allclose(data["after"][0], xs)
     assert np.allclose(data["after"][1], ys)
+
+def test_conf_loader():
+    conf = yaml.load(open(os.path.join(os.path.dirname(__file__), '..',
+                                       'config.yml'),'r'))
+    flock = Flock()
+    for key in conf.keys():
+        for sub_key in conf[key].keys():
+            print(sub_key)
+            print(getattr(flock, sub_key),conf[key][sub_key])
+            assert getattr(flock, sub_key) == conf[key][sub_key]

@@ -5,13 +5,14 @@ boid_parameters:
     y_window: [300.,600.]
     xvs_window: [0.,10.]
     yvs_window: [-20.,20.]
-#Plot Parameters, Used in Flock.show_animation
+#Plot Parameters, Used in Flock.gen_animation
 animation_parameters:
     fig_limits: [-500.,1500]
     frames: 50.
     interval: 50.
 ### Used in Flock.update_boids
 flock_parameters:
+    number: 50
     flocking_factor: 0.01
     alert_distance: 100.
     aware_distance: 10000.
