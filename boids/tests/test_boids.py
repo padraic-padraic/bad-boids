@@ -7,7 +7,8 @@ import os
 import yaml
 
 def test_bad_boids_regression():
-    regression_data=yaml.load(open(os.path.join(os.path.dirname(__file__),'fixture.yml')))
+    regression_data=yaml.load(open(os.path.join(os.path.dirname(__file__),
+                                  'Fixtures','fixture.yml'),'r'))
     boid_data=regression_data["before"]
     flock = Flock.from_data(boid_data)
     flock.update_boids()
@@ -17,7 +18,8 @@ def test_bad_boids_regression():
             assert_almost_equal(after_value,calculated_value,delta=0.01)
 
 def test_from_data():
-    data=yaml.load(open(os.path.join(os.path.dirname(__file__),'fixture.yml')))
+    data=yaml.load(open(os.path.join(os.path.dirname(__file__),'Fixtures',
+                                     'fixture.yml'),'r'))
     flock = Flock.from_data(data["before"])
     imported = flock.data
     for real,got in zip(data["before"],imported):
@@ -25,7 +27,8 @@ def test_from_data():
             assert_equal(real_value,got_value)
 
 def test_properties():
-    data=yaml.load(open(os.path.join(os.path.dirname(__file__),'fixture.yml')))
+    data=yaml.load(open(os.path.join(os.path.dirname(__file__),'Fixtures',
+                                     'fixture.yml')))
     flock = Flock.from_data(data["after"])
     xs,ys = flock.coord_tuple
     got_data = flock.data
@@ -39,8 +42,12 @@ def test_conf_loader():
     conf = yaml.load(open(os.path.join(os.path.dirname(__file__), '..',
                                        'config.yml'),'r'))
     flock = Flock()
-    for key in conf.keys():
-        for sub_key in conf[key].keys():
-            print(sub_key)
-            print(getattr(flock, sub_key),conf[key][sub_key])
-            assert getattr(flock, sub_key) == conf[key][sub_key]
+    for key, item in conf.items():
+        for sub_key in item.keys():
+            assert getattr(flock, sub_key) == item[sub_key]
+    non_default_conf = yaml.load(open(os.path.join(os.path.dirname(__file__),
+                                                 'Fixtures','config.yml'),'r'))
+    flock = Flock(conf=non_default_conf)
+    for key,item in non_default_conf.items():
+        for sub_key in item.keys():
+            assert getattr(flock, sub_key) == item[sub_key]

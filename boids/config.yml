@@ -1,6 +1,5 @@
 ### Used in Flock.__init__
 boid_parameters:
-    number: 50
     x_window: [-450., 50.]
     y_window: [300.,600.]
     xvs_window: [0.,10.]

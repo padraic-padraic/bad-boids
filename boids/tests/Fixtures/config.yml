@@ -1,0 +1,18 @@
+### Used in Flock.__init__
+boid_parameters:
+    x_window: [-400., 200.]
+    y_window: [100.,200.]
+    xvs_window: [0.5,11.]
+    yvs_window: [-2000.,2000.]
+#Plot Parameters, Used in Flock.gen_animation
+animation_parameters:
+    fig_limits: [500.,1500]
+    frames: 60.
+    interval: 20.
+### Used in Flock.update_boids
+flock_parameters:
+    number: 500
+    flocking_factor: 0.001
+    alert_distance: 1001.
+    aware_distance: 10010.
+    speedmatching_weight: 0.12555
