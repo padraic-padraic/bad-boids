@@ -7,6 +7,7 @@ from matplotlib import animation
 import numpy as np
 import os
 import random
+import six
 import yaml
 
 class Flock(object):
@@ -65,7 +66,10 @@ class Flock(object):
     @property
     def offset_tuple(self):
         """Helper function to make updating the animation easier"""
-        return zip(self.positions[0],self.positions[1])
+        if six.PY3:
+            return list(zip(self.positions[0],self.positions[1]))
+        else:
+            return zip(self.positions[0],self.positions[1])
 
     @property
     def data(self):

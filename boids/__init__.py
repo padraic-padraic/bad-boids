@@ -1,1 +1,1 @@
-from flock import Flock
+from .flock import Flock
