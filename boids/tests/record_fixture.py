@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 import os
 import yaml
-from boids.flock import Flock
+from boids import Flock
 from copy import deepcopy
 
 flock = Flock()

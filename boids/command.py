@@ -1,4 +1,5 @@
-from .flock import Flock
+"""Defines argument parsing for use in """
+from boids import Flock
 import argparse
 import os
 import shutil

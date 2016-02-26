@@ -11,7 +11,7 @@ animation_parameters:
     interval: 50.
 ### Used in Flock.update_boids
 flock_parameters:
-    number: 1000
+    number: 50
     flocking_factor: 0.01
     alert_distance: 100.
     aware_distance: 10000.

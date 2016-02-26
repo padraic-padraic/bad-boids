@@ -10,10 +10,13 @@ import random
 import yaml
 
 class Flock(object):
-
+    """The Flock class: Contains two 2xN arrays detailing the coordinates and velocities of each boid.
+    """
     def __init__(self, **kwargs):
+        """Constructor: Can take a tuple of initial data and a config dictionary s keyword arguments. Falls back
+        to defaults if neither is present."""
         data = kwargs.get('data', None)
-        conf = kwargs.get('conf',None)
+        conf = kwargs.get('conf', None)
         self.load_conf(conf)
         if data is None:
             xs = self.random_gen(self.x_window, self.number)
@@ -29,6 +32,7 @@ class Flock(object):
         self.scatter = axes.scatter(xs,ys)
 
     def load_conf(self, conf=None):
+        """Load the simulation parameters from a config dict. Falls back to the default config if no dict is given."""
         if conf == None:
             with open(os.path.join(os.path.dirname(__file__),'config.yml'),'r') as f:
                 conf = yaml.load(f)
@@ -47,25 +51,32 @@ class Flock(object):
 
     @staticmethod
     def random_gen(window,number):
+        """Generate an array of random values within the specified range"""
         _min,_max = window
         return np.array([random.uniform(_min, _max) for x in range(number)])
 
     @classmethod
     def from_data(cls, _data):
+        """Wrapper around __init__ to make it easier to load initial data. Takes a tuple of initial values
+        in the form (x_coords,y_coords,x_velocities,y_velocities)."""
         flock = cls(data=_data)
         return flock
 
     @property
     def offset_tuple(self):
+        """Helper function to make updating the animation easier"""
         return zip(self.positions[0],self.positions[1])
 
     @property
     def data(self):
+        """Helper function to easily extract data about all the boids. Returns a tuple in the form
+        (xcoords,ycoords,x_velocities,y_velocities)"""
         xs,ys = self.positions
         xvs,yvs = self.velocities
         return (xs,ys,xvs,yvs)
 
     def update_boids(self):
+        """Move the boids forward one timestep"""
         # Fly towards the middle
         flock_com = np.mean(self.positions,1)
         self.velocities -= self.flocking_factor*(self.positions - flock_com[:,np.newaxis])
@@ -86,13 +97,16 @@ class Flock(object):
         self.positions += self.velocities
 
     def animate(self,frame):
+        """Helper function used to create the animation"""
         self.update_boids()
         self.scatter.set_offsets(self.offset_tuple)
 
     def gen_animation(self):
+        """Call matplotlib.animation.FuncAnimation to generate the animation."""
         self.anim = animation.FuncAnimation(self.figure, self.animate,
                                        frames=50,interval=50)
     def show_animation(self):
+        """Generate and show the animation"""
         self.gen_animation()
         plt.show()
 
