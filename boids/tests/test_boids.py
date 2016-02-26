@@ -30,13 +30,15 @@ def test_properties():
     data=yaml.load(open(os.path.join(os.path.dirname(__file__),'Fixtures',
                                      'fixture.yml')))
     flock = Flock.from_data(data["after"])
-    xs,ys = flock.coord_tuple
+    offset = flock.offset_tuple
+    true_offset = zip(data['after'][0],data['after'][1])
     got_data = flock.data
     for after,got in zip(data["after"],got_data):
         for after_value,got_value in zip(after,got):
             assert_almost_equal(after_value,got_value,delta=0.01)
-    assert np.allclose(data["after"][0], xs)
-    assert np.allclose(data["after"][1], ys)
+    for n, item in enumerate(offset):
+        assert item[0] == true_offset[n][0]
+        assert item[1] == true_offset[n][1]
 
 def test_conf_loader():
     conf = yaml.load(open(os.path.join(os.path.dirname(__file__), '..',
@@ -48,6 +50,6 @@ def test_conf_loader():
     non_default_conf = yaml.load(open(os.path.join(os.path.dirname(__file__),
                                                  'Fixtures','config.yml'),'r'))
     flock = Flock(conf=non_default_conf)
-    for key,item in non_default_conf.items():
+    for key, item in non_default_conf.items():
         for sub_key in item.keys():
             assert getattr(flock, sub_key) == item[sub_key]

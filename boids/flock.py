@@ -26,7 +26,7 @@ class Flock(object):
         self.velocities = np.array([xvs,yvs])
         self.figure = plt.figure()
         axes=plt.axes(xlim=self.fig_limits, ylim=self.fig_limits)
-        self.scatter = axes.scatter(xs, ys)
+        self.scatter = axes.scatter(xs,ys)
 
     def load_conf(self, conf=None):
         if conf == None:
@@ -56,8 +56,8 @@ class Flock(object):
         return flock
 
     @property
-    def coord_tuple(self):
-        return (self.positions[0],self.positions[1])
+    def offset_tuple(self):
+        return zip(self.positions[0],self.positions[1])
 
     @property
     def data(self):
@@ -87,7 +87,7 @@ class Flock(object):
 
     def animate(self,frame):
         self.update_boids()
-        self.scatter.set_offsets(self.coord_tuple)
+        self.scatter.set_offsets(self.offset_tuple)
 
     def gen_animation(self):
         self.anim = animation.FuncAnimation(self.figure, self.animate,
