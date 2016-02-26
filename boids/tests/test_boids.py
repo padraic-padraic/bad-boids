@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 from boids.flock import Flock
+from mock import patch
 from nose.tools import assert_equal, assert_almost_equal
 import os
 import yaml
@@ -13,6 +14,36 @@ def test_bad_boids_regression():
     flock.update_boids()
     res = flock.data
     for after, calculated in zip(regression_data["after"], res):
+        for after_value, calculated_value in zip(after, calculated):
+            assert_almost_equal(after_value, calculated_value, delta=0.01)
+
+def test_move_to_middle_regression():
+    regression_data=yaml.load(open(os.path.join(os.path.dirname(__file__),
+                                  'Fixtures','fixture.yml'),'r'))
+    flock = Flock.from_data(regression_data['before'])
+    flock.move_to_middle()
+    res = flock.data
+    for after, calculated in zip(regression_data["middle"], res):
+        for after_value, calculated_value in zip(after, calculated):
+            assert_almost_equal(after_value, calculated_value, delta=0.01)
+
+def test_avoid_nearby_regression():
+    regression_data=yaml.load(open(os.path.join(os.path.dirname(__file__),
+                                  'Fixtures','fixture.yml'),'r'))
+    flock = Flock.from_data(regression_data['before'])
+    flock.avoid_nearby_birds()
+    res = flock.data
+    for after, calculated in zip(regression_data["avoid"], res):
+        for after_value, calculated_value in zip(after, calculated):
+            assert_almost_equal(after_value, calculated_value, delta=0.01)
+
+def test_match_speed_regression():
+    regression_data=yaml.load(open(os.path.join(os.path.dirname(__file__),
+                                  'Fixtures','fixture.yml'),'r'))
+    flock = Flock.from_data(regression_data['before'])
+    flock.match_speed_to_nearby_birds()
+    res = flock.data
+    for after, calculated in zip(regression_data["match"], res):
         for after_value, calculated_value in zip(after, calculated):
             assert_almost_equal(after_value, calculated_value, delta=0.01)
 
@@ -40,10 +71,10 @@ def test_properties():
         assert item[1] == true_offset[n][1]
 
 def test_conf_loader():
-    conf = yaml.load(open(os.path.join(os.path.dirname(__file__), '..',
+    default_conf = yaml.load(open(os.path.join(os.path.dirname(__file__), '..',
                                        'config.yml'),'r'))
     flock = Flock()
-    for key, item in conf.items():
+    for key, item in default_conf.items():
         for sub_key in item.keys():
             assert getattr(flock, sub_key) == item[sub_key]
     non_default_conf = yaml.load(open(os.path.join(os.path.dirname(__file__),

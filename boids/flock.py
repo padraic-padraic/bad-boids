@@ -79,24 +79,33 @@ class Flock(object):
         xvs,yvs = self.velocities
         return (xs,ys,xvs,yvs)
 
-    def update_boids(self):
-        """Move the boids forward one timestep"""
-        # Fly towards the middle
+    def move_to_middle(self):
         flock_com = np.mean(self.positions,1)
-        self.velocities -= self.flocking_factor*(self.positions - flock_com[:,np.newaxis])
-        # Fly away from nearby boids
+        self.velocities -= (self.flocking_factor *
+                           (self.positions - flock_com[:, np.newaxis]))
+
+    def avoid_nearby_birds(self):
         separations = self.positions[:,np.newaxis,:] - self.positions[:,:,np.newaxis]
         distant = np.sum(separations*separations,0) > self.alert_distance
         correction = np.copy(separations)
         correction[0,:,:][distant] = 0.
         correction[1,:,:][distant] = 0.
         self.velocities += np.sum(correction,1)
-        # Try to match speed with nearby boids
+        return separations
+
+    def match_speed_to_nearby_birds(self):
+        separations = self.positions[:,np.newaxis,:] - self.positions[:,:,np.newaxis]
         delta_vs = self.velocities[:,np.newaxis,:] - self.velocities[:,:,np.newaxis]
         distant = np.sum(separations*separations,0) > self.aware_distance
         delta_vs[0,:,:][distant] = 0.
         delta_vs[1,:,:][distant] = 0.
         self.velocities += self.speedmatching_weight * np.mean(delta_vs,1)
+
+    def update_boids(self):
+        """Move the boids forward one timestep"""
+        self.move_to_middle()
+        separations = self.avoid_nearby_birds()
+        self.match_speed_to_nearby_birds()
         # Move according to velocities
         self.positions += self.velocities
 
