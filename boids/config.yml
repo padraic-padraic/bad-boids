@@ -15,4 +15,4 @@ flock_parameters:
     flocking_factor: 0.01
     alert_distance: 100.
     aware_distance: 10000.
-    speedmatching_weight: 0.125
+    speedmatching_factor: 0.125

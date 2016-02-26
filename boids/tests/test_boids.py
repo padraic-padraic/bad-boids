@@ -1,7 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 from boids.flock import Flock
-from mock import patch
+from mock import Mock, patch
 from nose.tools import assert_equal, assert_almost_equal
 import os
 import yaml
@@ -83,3 +83,25 @@ def test_conf_loader():
     for key, item in non_default_conf.items():
         for sub_key in item.keys():
             assert getattr(flock, sub_key) == item[sub_key]
+@patch('random.uniform',return_value=1)
+def test_random_gen(mock_uniform):
+    f = Flock()
+    assert mock_uniform.call_count == 200
+    mock_uniform.assert_any_call(-450.,50.)
+    mock_uniform.assert_any_call(300.,600.)
+    mock_uniform.assert_any_call(0.,10.)
+    mock_uniform.assert_any_call(-20.,20.)
+
+@patch('matplotlib.animation.FuncAnimation')
+def test_gen_animation(mock_funcanim):
+    f = Flock()
+    f.gen_animation()
+    mock_funcanim.assert_called_with(f.figure,f.animate,frames=50,interval=50)
+
+@patch('matplotlib.collections.PathCollection.set_offsets')
+@patch('boids.Flock.update_boids')
+def test_animate(mock_update,mock_scatter):
+    f = Flock()
+    f.animate(Mock())
+    assert mock_update.called
+    mock_scatter.assert_called_with(f.offset_tuple)

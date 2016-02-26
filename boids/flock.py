@@ -37,18 +37,9 @@ class Flock(object):
         if conf == None:
             with open(os.path.join(os.path.dirname(__file__),'config.yml'),'r') as f:
                 conf = yaml.load(f)
-        self.fig_limits = conf['animation_parameters'].get('fig_limits')
-        self.frames = conf['animation_parameters']['frames']
-        self.interval = conf['animation_parameters']['interval']
-        self.number = conf['flock_parameters'].get('number')
-        self.flocking_factor = conf['flock_parameters'].get('flocking_factor')
-        self.alert_distance = conf['flock_parameters'].get('alert_distance')
-        self.aware_distance = conf['flock_parameters'].get('aware_distance')
-        self.speedmatching_weight = conf['flock_parameters'].get('speedmatching_weight')
-        self.x_window = conf['boid_parameters'].get('x_window')
-        self.y_window = conf['boid_parameters'].get('y_window')
-        self.xvs_window = conf['boid_parameters'].get('xvs_window')
-        self.yvs_window = conf['boid_parameters'].get('yvs_window')
+        for key in conf.keys():
+            for sub_key, item in conf[key].items():
+                setattr(self, sub_key, item)
 
     @staticmethod
     def random_gen(window,number):
@@ -79,6 +70,26 @@ class Flock(object):
         xvs,yvs = self.velocities
         return (xs,ys,xvs,yvs)
 
+    @property
+    def conf(self):
+        not_conf = ['positions','velocities']
+        keys = [key for key in self.__dict__.keys() if not key in not_conf]
+        animation_parameters = ['fig_limits','frames','interval']
+        boid_parameters = ['x_window','y_window','xvs_window','yvs_window']
+        flock_parameters = ['number', 'flocking_factor', 'aware_distance',
+                            'alert_distance', 'speedmatching_factor']
+        conf = {'animation_parameters':{},
+                'boid_parameters':{},
+                'flock_parameters':{}}
+        for key in keys:
+            if key in animation_parameters:
+                conf['animation_parameters'][key] = getattr(self, key)
+            elif key in boid_parameters:
+                conf['boid_parameters'][key] = getattr(self, key)
+            else:
+                conf['flock_parameters'][key] = getattr(self,key)
+        return conf
+
     def move_to_middle(self):
         flock_com = np.mean(self.positions,1)
         self.velocities -= (self.flocking_factor *
@@ -99,7 +110,7 @@ class Flock(object):
         distant = np.sum(separations*separations,0) > self.aware_distance
         delta_vs[0,:,:][distant] = 0.
         delta_vs[1,:,:][distant] = 0.
-        self.velocities += self.speedmatching_weight * np.mean(delta_vs,1)
+        self.velocities += self.speedmatching_factor * np.mean(delta_vs,1)
 
     def update_boids(self):
         """Move the boids forward one timestep"""
