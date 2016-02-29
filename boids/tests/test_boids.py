@@ -83,14 +83,14 @@ def test_conf_loader():
     for key, item in non_default_conf.items():
         for sub_key in item.keys():
             assert getattr(flock, sub_key) == item[sub_key]
-@patch('random.uniform',return_value=1)
+@patch('numpy.random.uniform',return_value=[1.])
 def test_random_gen(mock_uniform):
     f = Flock()
-    assert mock_uniform.call_count == 200
-    mock_uniform.assert_any_call(-450.,50.)
-    mock_uniform.assert_any_call(300.,600.)
-    mock_uniform.assert_any_call(0.,10.)
-    mock_uniform.assert_any_call(-20.,20.)
+    assert mock_uniform.call_count == 4
+    mock_uniform.assert_any_call(-450.,50.,50.)
+    mock_uniform.assert_any_call(300.,600.,50.)
+    mock_uniform.assert_any_call(0.,10.,50.)
+    mock_uniform.assert_any_call(-20.,20.,50.)
 
 @patch('matplotlib.animation.FuncAnimation')
 def test_gen_animation(mock_funcanim):

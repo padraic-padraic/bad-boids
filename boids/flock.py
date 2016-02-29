@@ -33,7 +33,7 @@ class Flock(object):
         self.scatter = axes.scatter(xs,ys)
 
     def load_conf(self, conf=None):
-        """Load the simulation parameters from a config dict. Falls back to the default config if no dict is given."""
+        """Load the simulation parameters from a config dict. Falls back to the default config if no dict is given. The expected structure is given in config.yml, which can be saved to the current directory using by calling --example_config"""
         if conf == None:
             with open(os.path.join(os.path.dirname(__file__),'config.yml'),'r') as f:
                 conf = yaml.load(f)
@@ -45,7 +45,7 @@ class Flock(object):
     def random_gen(window,number):
         """Generate an array of random values within the specified range"""
         _min,_max = window
-        return np.array([random.uniform(_min, _max) for x in range(number)])
+        return np.random.uniform(_min,_max,number)
 
     @classmethod
     def from_data(cls, _data):
