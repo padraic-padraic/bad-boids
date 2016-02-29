@@ -33,7 +33,7 @@ class Flock(object):
         self.scatter = axes.scatter(xs,ys)
 
     def load_conf(self, conf=None):
-        """Load the simulation parameters from a config dict. Falls back to the default config if no dict is given. The expected structure is given in config.yml, which can be saved to the current directory using by calling --example_config"""
+        """Load the simulation parameters from a config dict. Falls back to the default config if no dict is given. The expected structure can be seen by calling Flock().conf interpreatively."""
         if conf == None:
             with open(os.path.join(os.path.dirname(__file__),'config.yml'),'r') as f:
                 conf = yaml.load(f)
